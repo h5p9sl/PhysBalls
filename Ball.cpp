@@ -38,21 +38,12 @@ void Ball::randomizePosition()
 }
 
 void Ball::update(float f_delta) {
+    m_shape.setRadius(this->m_mass * 10.f);
+    float circleRadius = this->m_shape.getRadius();
+    m_shape.setOrigin(circleRadius, circleRadius);
 
-    this->m_position += this->m_velocity;
+    if (!this->m_static) this->m_position += this->m_velocity;
     this->m_shape.setPosition(this->m_position);
-
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        sf::Vector2i i_mousePos = sf::Mouse::getPosition(*globals->game.window);
-        sf::Vector2f mousePos = globals->game.window->mapPixelToCoords(i_mousePos);
-
-        sf::Vector2f vectorToMouse = { this->m_position - mousePos };
-        float distance = sqrtf( powf(vectorToMouse.x, 2.f) + powf(vectorToMouse.y, 2.f) );
-        // Normalize
-        vectorToMouse /= distance;
-
-        this->m_velocity -= vectorToMouse * 50.f / distance * this->m_mass;
-    }
 
     for (auto object : globals->game.objects) {
         if (object != this) {
@@ -69,6 +60,12 @@ void Ball::update(float f_delta) {
             if (distance <= this->m_shape.getRadius() + object->m_shape.getRadius())
             {
                 sf::Vector2f oVeloc[] = { this->m_velocity, object->m_velocity };
+
+                if (object->m_static == true) {
+                    // move *this out of the circumference of the other shape
+                    this->m_position += vectorToObject;
+                    this->m_velocity += vectorToObject;
+                }
 
                 // move *this out of the circumference of the other shape
                 this->m_position += vectorToObject / this->m_mass;
@@ -90,22 +87,22 @@ void Ball::update(float f_delta) {
             sf::Vector2f windowSize = globals->game.window->getView().getSize();
             const float radius = this->m_shape.getRadius();
 
-            if (this->m_position.x + radius > windowSize.x) {
-                this->m_position.x = windowSize.x - radius;
-                this->m_velocity.x = -this->m_velocity.x * 0.25f;
-            }
-            if (this->m_position.y + radius > windowSize.y) {
-                this->m_position.y = windowSize.y - radius;
-                this->m_velocity.y = -this->m_velocity.y * 0.25f;
-            }
-            if (this->m_position.x - radius < 0.f) {
-                this->m_position.x = 0.f + radius;
-                this->m_velocity.x = -this->m_velocity.x * 0.25f;
-            }
-            if (this->m_position.y - radius < 0.f) {
-                this->m_position.y = 0.f + radius;
-                this->m_velocity.y = -this->m_velocity.y * 0.25f;
-            }
+            // if (this->m_position.x + radius > windowSize.x) {
+            //     this->m_position.x = windowSize.x - radius;
+            //     this->m_velocity.x = -this->m_velocity.x * 0.25f;
+            // }
+            // if (this->m_position.y + radius > windowSize.y) {
+            //     this->m_position.y = windowSize.y - radius;
+            //     this->m_velocity.y = -this->m_velocity.y * 0.25f;
+            // }
+            // if (this->m_position.x - radius < 0.f) {
+            //     this->m_position.x = 0.f + radius;
+            //     this->m_velocity.x = -this->m_velocity.x * 0.25f;
+            // }
+            // if (this->m_position.y - radius < 0.f) {
+            //     this->m_position.y = 0.f + radius;
+            //     this->m_velocity.y = -this->m_velocity.y * 0.25f;
+            // }
 
         }
     }
