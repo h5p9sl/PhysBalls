@@ -3,15 +3,25 @@
 #include <vector>
 #include "Globals.h"
 #include "Ball.h"
+#include "Input.h"
 
 #include <math.h>
 
 void processWindowMessages(sf::Window& window)
 {
     sf::Event event;
+
+    // Update input states
+    Input::updateStates();
+
     while (window.pollEvent(event))
     {
-        if (event.type == sf::Event::Closed) window.close();
+        Input::handleInputEvent(event);
+        switch (event.type) {
+        case sf::Event::Closed:
+            window.close();
+            break;
+        }
     }
 }
 
@@ -50,13 +60,9 @@ int main()
         globals->globalTime++;
         processWindowMessages(window);
 
-        static bool downlastState = false;
-        static bool downcurrState = false;
-        downcurrState = sf::Keyboard::isKeyPressed(sf::Keyboard::Down);
-        if (downcurrState && !downlastState) {
+        if (Input::wasKeyPressed(sf::Keyboard::R, true)) {
             resetScene();
         }
-        downlastState = downcurrState;
 
         // Update all objects
         for (auto object : globals->game.objects) {
