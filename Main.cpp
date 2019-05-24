@@ -23,13 +23,10 @@ void processWindowMessages(sf::Window& window)
             break;
         // TODO: Cleanup this ugly code
         case sf::Event::MouseWheelScrolled:
-            static float zoom = 1.f;
+            constexpr float zoomfactor = 0.25f;
             float delta = event.mouseWheelScroll.delta; 
             auto view = globals->game.window->getView();
-            if (zoom > 1.f && delta > 0.f || zoom < 1.f && delta < 0.f) { zoom = 1.f; }
-            zoom -= event.mouseWheelScroll.delta * 0.05f;
-            std::cout << "zoomFactor = " << zoom << std::endl;
-            view.zoom(zoom);
+            view.zoom((delta >= 1.f) ? 1.f - zoomfactor : 1.f + zoomfactor);
             globals->game.window->setView(view);
             break;
         }
