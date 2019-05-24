@@ -8,7 +8,9 @@ Ball::Ball() :
 }
 
 Ball::Ball(float t_mass)
-    : m_mass(t_mass)
+    :
+    m_mass(t_mass),
+    m_static(false)
 {
     m_shape.setRadius(this->m_mass * 10.f);
 
@@ -16,11 +18,13 @@ Ball::Ball(float t_mass)
     m_shape.setOrigin(circleRadius, circleRadius);
     this->randomizePosition();
 
-    int oof = rand();
+    int r = rand();
+    int g = rand();
+    int b = rand();
     this->m_shape.setFillColor({
-        static_cast<uint8_t>(oof % 0xff),
-        static_cast<uint8_t>(oof * 2 % 0xff),
-        static_cast<uint8_t>(oof * 3 % 0xff)
+        static_cast<uint8_t>(r % 0xff),
+        static_cast<uint8_t>(g % 0xff),
+        static_cast<uint8_t>(b % 0xff)
         });
 
 }
